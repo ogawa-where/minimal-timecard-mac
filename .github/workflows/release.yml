@@ -1,0 +1,32 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release binary
+        run: swift build -c release
+
+      - name: Create app bundle
+        run: ./scripts/package-app.sh release
+
+      - name: Zip app bundle
+        run: |
+          cd build
+          zip -r MinimalTimecard.zip MinimalTimecard.app
+
+      - name: Run tests
+        run: swift test
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/MinimalTimecard.zip
+          generate_release_notes: true
