@@ -5,11 +5,15 @@ struct TimecardMenuView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            timerSection
-            actionButtons
-            Divider()
-            reportButton
-            quitButton
+            if viewModel.showDeleteConfirmation {
+                deleteConfirmation
+            } else {
+                timerSection
+                actionButtons
+                Divider()
+                reportButton
+                quitButton
+            }
 
             if let error = viewModel.errorMessage {
                 Text(error)
@@ -20,22 +24,6 @@ struct TimecardMenuView: View {
         }
         .padding(16)
         .frame(width: 240)
-        .alert(
-            "ログファイルを削除しますか？",
-            isPresented: Binding(
-                get: { viewModel.showDeleteConfirmation },
-                set: { _ in viewModel.dismissDeleteConfirmation() }
-            )
-        ) {
-            Button("削除する", role: .destructive) {
-                viewModel.deleteLogFile()
-            }
-            Button("残す", role: .cancel) {
-                viewModel.dismissDeleteConfirmation()
-            }
-        } message: {
-            Text("削除すると元に戻せません。月次レポートは出力済みです。")
-        }
     }
 
     // MARK: - Timer Section
@@ -93,6 +81,34 @@ struct TimecardMenuView: View {
                 }
             }
             .controlSize(.large)
+        }
+    }
+
+    // MARK: - Delete Confirmation
+
+    private var deleteConfirmation: some View {
+        VStack(spacing: 10) {
+            Text("ログファイルを削除しますか？")
+                .font(.headline)
+
+            Text("削除すると元に戻せません。\n月次レポートは出力済みです。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: 8) {
+                Button(action: viewModel.dismissDeleteConfirmation) {
+                    Text("残す")
+                        .frame(maxWidth: .infinity)
+                }
+                .controlSize(.large)
+
+                Button(role: .destructive, action: viewModel.deleteLogFile) {
+                    Text("削除する")
+                        .frame(maxWidth: .infinity)
+                }
+                .controlSize(.large)
+            }
         }
     }
 
