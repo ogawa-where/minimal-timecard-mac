@@ -24,7 +24,8 @@ struct CSVService: Sendable {
         try ensureDirectoryExists()
         let fm = FileManager.default
         if !fm.fileExists(atPath: logFilePath) {
-            let data = (header + "\n").data(using: .utf8)!
+            var data = Data([0xEF, 0xBB, 0xBF])
+            data.append((header + "\n").data(using: .utf8)!)
             fm.createFile(atPath: logFilePath, contents: data)
         }
     }
@@ -50,7 +51,10 @@ struct CSVService: Sendable {
     static func readAllEvents() throws -> [TimecardEvent] {
         try ensureLogFileExists()
 
-        let content = try String(contentsOfFile: logFilePath, encoding: .utf8)
+        var content = try String(contentsOfFile: logFilePath, encoding: .utf8)
+        if content.hasPrefix("\u{FEFF}") {
+            content.removeFirst()
+        }
         let lines = content.components(separatedBy: .newlines)
 
         return lines.dropFirst() // skip header
@@ -72,7 +76,13 @@ struct CSVService: Sendable {
     static func writeReport(fileName: String, content: String) throws -> String {
         try ensureDirectoryExists()
         let path = "\(directoryPath)/\(fileName)"
-        try content.write(toFile: path, atomically: true, encoding: .utf8)
+        let bom = Data([0xEF, 0xBB, 0xBF])
+        guard let contentData = content.data(using: .utf8) else {
+            throw CSVError.encodingFailed
+        }
+        var data = bom
+        data.append(contentData)
+        try data.write(to: URL(fileURLWithPath: path))
         return path
     }
 
