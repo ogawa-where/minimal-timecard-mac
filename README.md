@@ -15,20 +15,29 @@ Mac向けの超シンプルなメニューバー常駐型タイムカードア�
 
 ## Install
 
-### Homebrew
+### Homebrew (推奨)
 
 ```bash
 brew install ogawa-where/tap/minimal-timecard
 ```
 
-### GitHub Releases
+> **Note:** 署名なしアプリのため、初回起動時に以下を実行してください:
+> ```bash
+> xattr -cr /Applications/MinimalTimecard.app
+> ```
+> または、`MinimalTimecard.app` を右クリック →「開く」で起動できます。
+
+### その他のインストール方法
+
+<details>
+<summary>GitHub Releases からダウンロード</summary>
 
 [Releases](https://github.com/ogawa-where/minimal-timecard-mac/releases) から `MinimalTimecard.zip` をダウンロードし、解凍した `MinimalTimecard.app` を `/Applications` に移動してください。
 
-> **Note:** 署名なしアプリのため、初回起動時に「開発元を確認できません」と表示されます。
-> `MinimalTimecard.app` を右クリック →「開く」を選択すると起動できます。
+</details>
 
-### Build from Source
+<details>
+<summary>ソースからビルド</summary>
 
 ```bash
 git clone https://github.com/ogawa-where/minimal-timecard-mac.git
@@ -37,6 +46,8 @@ swift build -c release
 ./scripts/package-app.sh release
 open build/MinimalTimecard.app
 ```
+
+</details>
 
 ## Usage
 
