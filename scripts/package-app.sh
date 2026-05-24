@@ -34,6 +34,13 @@ cp "$PROJECT_DIR/Sources/MinimalTimecard/Resources/Info.plist" "$APP_BUNDLE/Cont
 # Create PkgInfo
 echo -n "APPL????" > "$APP_BUNDLE/Contents/PkgInfo"
 
+# Re-sign the bundle ad-hoc so Contents/_CodeSignature/CodeResources is generated.
+# Without this, the Mach-O carries a linker-adhoc signature that implies bundle
+# resources should be sealed, but no bundle signature exists — Gatekeeper on
+# recent macOS rejects this with "code has no resources but signature indicates
+# they must be present" and the app fails to launch.
+codesign --force --deep --sign - "$APP_BUNDLE"
+
 echo "App bundle created at: $APP_BUNDLE"
 echo ""
 echo "To run:  open $APP_BUNDLE"
