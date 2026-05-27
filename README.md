@@ -93,6 +93,17 @@ Date,Time,Action
 xattr -cr /Applications/MinimalTimecard.app
 ```
 
+### `xattr: No such file` と出る / アプリが見当たらない
+
+`brew install` 済みなのに `/Applications/MinimalTimecard.app` が存在しない場合、Homebrew Cask のメタデータと実体がズレています（Finder や `rm` でアプリを削除した場合などに発生します）。以下で再配置してください:
+
+```bash
+brew reinstall --force ogawa-where/tap/minimal-timecard
+xattr -cr /Applications/MinimalTimecard.app
+```
+
+> アンインストールする際は Finder からのドラッグや `rm` ではなく `brew uninstall --cask minimal-timecard` を使ってください。
+
 ### メニューバーにアイコンが表示されない
 
 過去にメニューバーからアイコンを Cmd+ドラッグで取り除いた、または System Settings の Control Center で非表示にしていた場合、その設定が残っていてアイコンが表示されません。以下のコマンドで設定をリセットしてください:
